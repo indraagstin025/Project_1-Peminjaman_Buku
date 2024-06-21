@@ -1,9 +1,11 @@
 <!-- resources/views/preview.blade.php -->
 <x-app-layout>
     <section class="container min-vh-100">
+        <br>
+        <br>
         <div class="row row-cols-1 row-cols-lg-2 g-5" style="padding-top: 7rem; padding-bottom: 3rem">
             <div class="col">
-                <img class="d-block rounded-4 mx-auto" style="width: 70%"
+                <img class="d-block rounded-4 mx-auto width" style="width: 50%"
                     src="{{ isset($book->cover) ? asset('storage/' . $book->cover) : asset('storage/placeholder.png') }}"
                     alt="{{ $book->title }}" />
             </div>

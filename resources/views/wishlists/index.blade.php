@@ -3,7 +3,10 @@
         <div class="container">
             <br>
             <br>
-            <h2 class="fs-4 fw-bold mb-4">Wishlist Anda</h2>
+            <br>
+            <br>
+            <br>
+            <h2 class="fs-4 fw-bold mb-4 text-center">Wishlist Anda</h2>
 
             @if ($wishlists->isEmpty())
                 <p>Anda belum memiliki buku di Wishlist.</p>

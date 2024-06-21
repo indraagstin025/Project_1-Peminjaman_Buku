@@ -12,7 +12,7 @@
             </div>
         @enderror
 
-        <h2 class="mt-4 fs-4 fw-bold ms-4 mb-4">Sedang di-pinjam</h2>
+        <h2 class="mt-4 fs-4 fw-bold ms-4 mb-4 text-center">Sedang di-pinjam</h2>
 
         <div class="container">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
@@ -74,7 +74,7 @@
     </section>
 
     <section class="py-5 bg-body-tertiary">
-        <h2 class="fs-4 fw-bold ms-4 mb-4">Peminjaman terbaru anda</h2>
+        <h2 class="fs-4 fw-bold ms-4 mb-4 text-center">Peminjaman terbaru anda</h2>
 
         <div class="container">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
