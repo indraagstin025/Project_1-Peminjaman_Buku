@@ -1,20 +1,24 @@
 <x-app-layout>
-    <section class="d-flex flex-column justify-content-center align-items-center text-center mt-5 py-5 px-4">
-        <br><br><br>
-        <h1 class="mt-4 fs-2 fw-bold">Selamat Datang di Perpustakaan Online!</h1>
-        <form action="{{ route('search') }}" method="GET" class="position-relative d-flex w-100 my-4" style="max-width: 630px">
-            <input type="text" name="search" class="form-control" placeholder="Cari buku..." />
-            <button type="submit" class="btn btn-link position-absolute bottom-0 end-0" style="bottom: 4px; right: 1px;">
-                <svg class="text-body-tertiary" fill="currentColor" x="0px" y="0px" width="18" height="18" viewBox="0 0 18 18">
-                    <path d="M 9 2 C 5.1458514 2 2 5.1458514 2 9 C 2 12.854149 5.1458514 16 9 16 C 10.747998 16 12.345009 15.348024 13.574219 14.28125 L 14 14.707031 L 14 16 L 19.585938 21.585938 C 20.137937 22.137937 21.033938 22.137938 21.585938 21.585938 C 22.137938 21.033938 22.137938 20.137938 21.585938 19.585938 L 16 14 L 14.707031 14 L 14.28125 13.574219 C 15.348024 12.345009 16 10.747998 16 9 C 16 5.1458514 12.854149 2 9 2 z M 9 4 C 11.773268 4 14 6.2267316 14 9 C 14 11.773268 11.773268 14 9 14 C 6.2267316 14 4 11.773268 4 9 C 4 6.2267316 6.2267316 4 9 4 z"></path>
-                </svg>
-            </button>
-        </form>
+    <section class="hero-section">
+        <div class="container text-center py-5">
+            <br><br><br>
+            <h1 class="display-4 fw-bold">Selamat Datang di Pinjam Buku!</h1>
+            <form action="{{ route('search') }}" method="GET" class="search-form mt-4">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Cari buku...">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M15.646 14.354l-3.782-3.782A5.93 5.93 0 0 0 13 6c0-3.313-2.687-6-6-6S1 2.687 1 6s2.687 6 6 6c1.285 0 2.465-.418 3.438-1.122l3.782 3.782a1 1 0 0 0 1.414-1.414zM2 6a4 4 0 1 1 8 0a4 4 0 0 1-8 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
     </section>
 
     <section class="py-5 bg-light">
         <div class="container">
-            <h2 class="fs-4 fw-bold ms-4 mb-4 text-center">Kategori Buku</h2>
+            <h2 class="fw-bold text-center mb-4">Kategori Buku</h2>
             <ul class="nav nav-tabs justify-content-center" id="categoryTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="popular-tab" data-bs-toggle="tab" data-bs-target="#popular" type="button" role="tab" aria-controls="popular" aria-selected="true">Paling Populer</button>
@@ -33,78 +37,84 @@
                 </li>
             </ul>
             <div class="tab-content mt-4" id="categoryTabsContent">
+                <!-- Konten tab -->
                 <div class="tab-pane fade show active" id="popular" role="tabpanel" aria-labelledby="popular-tab">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach ($popularBooks as $popularBook)
-                            <a href="{{ route('preview', $popularBook) }}" class="col text-dark text-decoration-none">
-                                <div class="card h-100 rounded-4">
-                                    <img src="{{ isset($popularBook->cover) ? asset('storage/' . $popularBook->cover) : asset('storage/placeholder.png') }}" alt="{{ $popularBook->title }}" class="card-img-top rounded-4">
-                                    <div class="card-body text-center">
-                                        <h3 class="card-title fs-5 fw-bold mb-5">{{ $popularBook->title }}</h3>
-                                        <span class="fs-6">Dipinjam <span class="fw-bold text-decoration-underline">{{ $popularBook->borrows_count }}</span> kali</span>
-                                    </div>
+                        <div class="col mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="{{ isset($popularBook->cover) ? asset('storage/' . $popularBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top" alt="{{ $popularBook->title }}">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold">{{ $popularBook->title }}</h5>
+                                    <p class="card-text">Dipinjam <span class="fw-bold">{{ $popularBook->borrows_count }}</span> kali</p>
+                                    <a href="{{ route('preview', $popularBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
                                 </div>
-                            </a>
+                            </div>
+                        </div>
                         @endforeach
                     </div>
                 </div>
                 <div class="tab-pane fade" id="newest" role="tabpanel" aria-labelledby="newest-tab">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach ($newestBooks as $newestBook)
-                            <a href="{{ route('preview', $newestBook) }}" class="col text-dark text-decoration-none">
-                                <div class="card h-100 rounded-4">
-                                    <img src="{{ isset($newestBook->cover) ? asset('storage/' . $newestBook->cover) : asset('storage/placeholder.png') }}" alt="{{ $newestBook->title }}" class="card-img-top rounded-4">
-                                    <div class="card-body text-center">
-                                        <h3 class="card-title fs-5 fw-bold mb-5">{{ $newestBook->title }}</h3>
-                                        <span class="fs-6">Terbit <span class="fw-bold text-decoration-underline">{{ $newestBook->created_at->locale('id_ID')->diffForHumans() }}</span></span>
-                                    </div>
+                        <div class="col mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="{{ isset($newestBook->cover) ? asset('storage/' . $newestBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top" alt="{{ $newestBook->title }}">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold">{{ $newestBook->title }}</h5>
+                                    <p class="card-text">Terbit {{ $newestBook->created_at->locale('id_ID')->diffForHumans() }}</p>
+                                    <a href="{{ route('preview', $newestBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
                                 </div>
-                            </a>
+                            </div>
+                        </div>
                         @endforeach
                     </div>
                 </div>
                 <div class="tab-pane fade" id="novel" role="tabpanel" aria-labelledby="novel-tab">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach ($novelBooks as $novelBook)
-                            <a href="{{ route('preview', $novelBook) }}" class="col text-dark text-decoration-none">
-                                <div class="card h-100 rounded-4">
-                                    <img src="{{ isset($novelBook->cover) ? asset('storage/' . $novelBook->cover) : asset('storage/placeholder.png') }}" alt="{{ $novelBook->title }}" class="card-img-top rounded-4">
-                                    <div class="card-body text-center">
-                                        <h3 class="card-title fs-5 fw-bold mb-5">{{ $novelBook->title }}</h3>
-                                        <span class="fs-6">Kategori: Novel</span>
-                                    </div>
+                        <div class="col mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="{{ isset($novelBook->cover) ? asset('storage/' . $novelBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top" alt="{{ $novelBook->title }}">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold">{{ $novelBook->title }}</h5>
+                                    <p class="card-text">Kategori: Novel</p>
+                                    <a href="{{ route('preview', $novelBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
                                 </div>
-                            </a>
+                            </div>
+                        </div>
                         @endforeach
                     </div>
                 </div>
                 <div class="tab-pane fade" id="comic" role="tabpanel" aria-labelledby="comic-tab">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach ($comicBooks as $comicBook)
-                            <a href="{{ route('preview', $comicBook) }}" class="col text-dark text-decoration-none">
-                                <div class="card h-100 rounded-4">
-                                    <img src="{{ isset($comicBook->cover) ? asset('storage/' . $comicBook->cover) : asset('storage/placeholder.png') }}" alt="{{ $comicBook->title }}" class="card-img-top rounded-4">
-                                    <div class="card-body text-center">
-                                        <h3 class="card-title fs-5 fw-bold mb-5">{{ $comicBook->title }}</h3>
-                                        <span class="fs-6">Kategori: Komik</span>
-                                    </div>
+                        <div class="col mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="{{ isset($comicBook->cover) ? asset('storage/' . $comicBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top" alt="{{ $comicBook->title }}">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold">{{ $comicBook->title }}</h5>
+                                    <p class="card-text">Kategori: Komik</p>
+                                    <a href="{{ route('preview', $comicBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
                                 </div>
-                            </a>
+                            </div>
+                        </div>
                         @endforeach
                     </div>
                 </div>
                 <div class="tab-pane fade" id="encyclopedia" role="tabpanel" aria-labelledby="encyclopedia-tab">
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach ($encyclopediaBooks as $encyclopediaBook)
-                            <a href="{{ route('preview', $encyclopediaBook) }}" class="col text-dark text-decoration-none">
-                                <div class="card h-100 rounded-4">
-                                    <img src="{{ isset($encyclopediaBook->cover) ? asset('storage/' . $encyclopediaBook->cover) : asset('storage/placeholder.png') }}" alt="{{ $encyclopediaBook->title }}" class="card-img-top rounded-4">
-                                    <div class="card-body text-center">
-                                        <h3 class="card-title fs-5 fw-bold mb-5">{{ $encyclopediaBook->title }}</h3>
-                                        <span class="fs-6">Kategori: Ensiklopedia</span>
-                                    </div>
+                        <div class="col mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="{{ isset($encyclopediaBook->cover) ? asset('storage/' . $encyclopediaBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top" alt="{{ $encyclopediaBook->title }}">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold">{{ $encyclopediaBook->title }}</h5>
+                                    <p class="card-text">Kategori: Ensiklopedia</p>
+                                    <a href="{{ route('preview', $encyclopediaBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
                                 </div>
-                            </a>
+                            </div>
+                        </div>
                         @endforeach
                     </div>
                 </div>
@@ -112,3 +122,8 @@
         </div>
     </section>
 </x-app-layout>
+
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
