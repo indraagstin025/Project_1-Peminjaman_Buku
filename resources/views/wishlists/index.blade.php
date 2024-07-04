@@ -1,11 +1,7 @@
 <x-app-layout>
     <section class="py-5 bg-body-tertiary">
         <div class="container">
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
+            <br><br><br><br><br>
             <h2 class="fs-4 fw-bold mb-4 text-center">Wishlist Anda</h2>
 
             @if ($wishlists->isEmpty())

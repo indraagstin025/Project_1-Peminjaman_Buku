@@ -36,6 +36,8 @@
                     <button class="nav-link" id="encyclopedia-tab" data-bs-toggle="tab" data-bs-target="#encyclopedia" type="button" role="tab" aria-controls="encyclopedia" aria-selected="false">Ensiklopedia</button>
                 </li>
             </ul>
+
+            
             <div class="tab-content mt-4" id="categoryTabsContent">
                 <!-- Konten tab -->
                 <div class="tab-pane fade show active" id="popular" role="tabpanel" aria-labelledby="popular-tab">
@@ -54,6 +56,8 @@
                         @endforeach
                     </div>
                 </div>
+
+
                 <div class="tab-pane fade" id="newest" role="tabpanel" aria-labelledby="newest-tab">
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach ($newestBooks as $newestBook)
@@ -70,6 +74,8 @@
                         @endforeach
                     </div>
                 </div>
+
+
                 <div class="tab-pane fade" id="novel" role="tabpanel" aria-labelledby="novel-tab">
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach ($novelBooks as $novelBook)
@@ -86,6 +92,8 @@
                         @endforeach
                     </div>
                 </div>
+
+
                 <div class="tab-pane fade" id="comic" role="tabpanel" aria-labelledby="comic-tab">
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach ($comicBooks as $comicBook)
@@ -102,6 +110,8 @@
                         @endforeach
                     </div>
                 </div>
+
+
                 <div class="tab-pane fade" id="encyclopedia" role="tabpanel" aria-labelledby="encyclopedia-tab">
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                         @foreach ($encyclopediaBooks as $encyclopediaBook)
