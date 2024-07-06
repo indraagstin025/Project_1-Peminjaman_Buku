@@ -111,7 +111,8 @@ Proyek ini menggunakan beberapa library pihak ketiga:
 
 Laravel 10
 Bootstrap 5
-Lisensi
+
+### Lisensi
 Proyek ini dilisensikan di bawah lisensi MIT. Lihat file LICENSE untuk informasi lebih lanjut.
 
 
