@@ -21,8 +21,7 @@ class DatabaseSeeder extends Seeder
         if (app()->isLocal()) {
             User::factory()->create([
                 'name' => 'Admin',
-                'number' => '6969',
-                'number_type' => 'NIS',
+                'username' => 'Admin12',
                 'role' => User::ROLES['Admin'],
                 'password' => Hash::make('password'),
                 'address' => 'America',
@@ -32,8 +31,7 @@ class DatabaseSeeder extends Seeder
 
             User::factory()->create([
                 'name' => 'Pustakawan',
-                'number' => '9999',
-                'number_type' => 'NIS',
+                'username' => 'Pustakawan12',
                 'role' => User::ROLES['Librarian'],
                 'password' => Hash::make('password'),
                 'address' => 'America',
@@ -43,8 +41,7 @@ class DatabaseSeeder extends Seeder
 
             $member = User::factory()->create([
                 'name' => 'Member',
-                'number' => '9696',
-                'number_type' => 'NIS',
+                'username' => 'Member12',
                 'role' => User::ROLES['Member'],
                 'password' => Hash::make('password'),
                 'address' => 'America',

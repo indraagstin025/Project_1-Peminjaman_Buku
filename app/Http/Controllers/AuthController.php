@@ -14,8 +14,7 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'number_type' => ['required', Rule::in(User::NUMBER_TYPES)],
-            'number' => ['required', 'numeric', 'unique:' . User::class],
+            'username' => ['required', 'string', 'unique:' . User::class],
             'address' => ['required', 'string', 'max:255'],
             'telephone' => ['required', 'numeric'],
             'gender' => ['required', Rule::in(['Man', 'Woman'])],
@@ -35,22 +34,29 @@ class AuthController extends Controller
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
-            'number' => ['required'],
+            'username' => ['required'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
+        $user = User::where('username', $credentials['username'])->first();
 
-            return redirect()->intended(route('home'));
+        if (!$user) {
+            // Username tidak valid
+            return back()->with('login_error', 'Username anda tidak valid.')->onlyInput('username');
         }
 
-        return back()->withErrors([
-            'number' => 'The provided credentials do not match our records.',
-        ])->onlyInput('number');
+        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+            // Password tidak valid
+            return back()->with('login_error', 'Password anda tidak valid.')->onlyInput('username');
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('home'));
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         Auth::logout();
 
         $request->session()->invalidate();

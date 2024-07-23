@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restore;
+use App\Models\Book;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -51,7 +52,14 @@ class RestoreController extends Controller
         ]);
 
         if ($data['confirmation']) {
+            // Increment book amount
             $restore->book()->increment('amount', $restore->borrow->amount);
+
+            // Update book status to 'Available' if amount > 0
+            $book = $restore->book;
+            if ($book->amount > 0) {
+                $book->update(['status' => Book::STATUSES['Available']]);
+            }
 
             $data['status'] = Restore::STATUSES['Returned'];
         } else if (isset($data['fine'])) {

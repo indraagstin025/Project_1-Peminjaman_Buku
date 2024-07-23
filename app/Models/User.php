@@ -17,12 +17,7 @@ class User extends Authenticatable
         'Member' => 'Member',
     ];
 
-    public const NUMBER_TYPES = [
-        'NIS',
-        'NIP',
-        'NIK',
-    ];
-
+    
     public const GENDERS = [
         'Man' => 'Laki-laki',
         'Woman' => 'Perempuan',
@@ -30,8 +25,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
-        'number',
-        'number_type',
+        'username',
         'role',
         'password',
         'address',

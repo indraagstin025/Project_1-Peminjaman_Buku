@@ -17,9 +17,9 @@
                     <thead>
                         <tr>
                             <th>Nama</th>
-                            <th>Tipe Nomor</th>
-                            <th>Nomor</th>
-                            <th>Telepon</th>
+                            <th>Username</th>
+                            <th>Alamat</th>
+                            <th>Nomor Telepon</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -27,8 +27,8 @@
                         @forelse ($members as $member)
                             <tr>
                                 <td>{{ $member->name }}</td>
-                                <td>{{ $member->number_type }}</td>
-                                <td>{{ $member->number }}</td>
+                                <td>{{ $member->username }}</td>
+                                <td>{{ $member->address }}</td>
                                 <td>+{{ $member->telephone }}</td>
                                 <td class="d-flex">
                                     <a href="{{ route('admin.members.edit', $member) }}"

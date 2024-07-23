@@ -12,6 +12,7 @@ class Book extends Model
     public const STATUSES = [
         'Available' => 'Tersedia',
         'Unavailable' => 'Tidak tersedia',
+        'Borrowed' => 'Dipinjam',
     ];
 
     protected $fillable = [

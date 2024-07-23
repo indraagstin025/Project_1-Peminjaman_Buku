@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Book;
 use App\Models\Borrow;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -19,9 +20,9 @@ class BorrowController extends Controller
                 $q->whereHas('book', function (Builder $query) use ($request) {
                     $query->where('title', 'LIKE', "%{$request->search}%");
                 })
-                    ->orWhereHas('user', function (Builder $query) use ($request) {
-                        $query->where('name', 'LIKE', "%{$request->search}%");
-                    });
+                ->orWhereHas('user', function (Builder $query) use ($request) {
+                    $query->where('name', 'LIKE', "%{$request->search}%");
+                });
             });
         });
 
@@ -45,9 +46,13 @@ class BorrowController extends Controller
             'confirmation' => ['required', Rule::in([1])],
         ]);
 
-        // jika peminjaman belum terkonfirmasi kemudian saat ini dikonfirmasi
         if (!$borrow->confirmation) {
             $borrow->book()->decrement('amount', $borrow->amount);
+
+            $book = $borrow->book;
+            if ($book->amount <= 0) {
+                $book->update(['status' => Book::STATUSES['Unavailable']]);
+            }
         }
 
         $borrow->update($data);
@@ -59,6 +64,13 @@ class BorrowController extends Controller
 
     public function destroy(Borrow $borrow)
     {
+        $borrow->book()->increment('amount', $borrow->amount);
+
+        $book = $borrow->book;
+        if ($book->amount > 0 && $book->status === Book::STATUSES['Unavailable']) {
+            $book->update(['status' => Book::STATUSES['Available']]);
+        }
+
         $borrow->delete();
 
         return redirect()

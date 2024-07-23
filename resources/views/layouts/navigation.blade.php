@@ -12,7 +12,6 @@
                     @auth
                         <a class="nav-link text-light fw-bold {{ request()->routeIs('wishlists.index') ? 'active' : '' }}" href="{{ route('wishlists.index') }}">Wishlist</a>
                         <a class="nav-link text-light fw-bold {{ request()->routeIs('my-books.*') ? 'active' : '' }}" href="{{ route('my-books.index') }}">Buku-ku</a>
-                        <a class="nav-link text-light fw-bold {{ request()->routeIs('chat.index') ? 'active' : '' }}" href="{{ route('chat.index') }}">Chat</a>
                         <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Anda yakin ingin keluar?')">
                             @csrf
                             @method('DELETE')

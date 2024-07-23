@@ -30,33 +30,55 @@ class RegisterAdmin extends Command
      */
     public function handle()
     {
-        $credentials = [
-            'name' => $this->ask('Nama'),
-            'number_type' => $this->choice(
-                'Tipe Nomor',
-                User::NUMBER_TYPES,
-            ),
-            'number' => $this->ask('Nomor'),
-            'address' => $this->ask('Alamat'),
-            'telephone' => $this->ask('Nomor Telepon'),
-            'gender' => $this->choice(
-                'Jenis Kelamin',
-                ['Laki-laki', 'Perempuan'],
-            ),
-            'password' => $this->secret('Password'),
-            'role' => User::ROLES['Admin'],  
-        ];
+        // Loop until valid input is given
+        do {
+            $credentials = [
+                'name' => $this->ask('Nama'),
+                'username' => $this->ask('Username'), // Menggunakan username
+                'address' => $this->ask('Alamat'),
+                'telephone' => $this->ask('Nomor Telepon'),
+                'gender' => $this->choice(
+                    'Jenis Kelamin',
+                    array_values(User::GENDERS), // Pilih dari konstanta yang ada
+                ),
+                'password' => $this->secret('Password'),
+                'role' => User::ROLES['Admin'], // Role Admin dari konstanta
+            ];
 
-        $password = $credentials['password'];
-        $credentials['password'] = Hash::make($password);
+            // Validasi input
+            $validator = Validator::make($credentials, [
+                'name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users,username', // Validasi unik untuk username
+                'address' => 'required|string|max:255',
+                'telephone' => 'required|string|max:15', // Atau gunakan 'numeric'
+                'gender' => 'required|string|in:Laki-laki,Perempuan',
+                'password' => 'required|string|min:8',
+            ]);
 
+            if ($validator->fails()) {
+                // Tampilkan pesan error jika validasi gagal
+                $this->error('Input tidak valid. Silakan coba lagi.');
+                $this->info(implode("\n", $validator->errors()->all()));
+            }
+        } while ($validator->fails());
+
+        // Simpan password asli untuk output
+        $plainPassword = $credentials['password'];
+
+        // Enkripsi password
+        $credentials['password'] = Hash::make($plainPassword);
+
+        // Buat pengguna baru
         $user = User::create($credentials);
 
+        // Tampilkan tabel dengan username dan password asli
+        $this->info('Pengguna Admin berhasil terdaftar:');
         $this->table(
-            ['Nomor', 'Password'],
-            [[$user->number, $password]],
+            ['Username', 'Password'],
+            [[$user->username, $plainPassword]]
         );
 
         return Command::SUCCESS;
     }
 }
+

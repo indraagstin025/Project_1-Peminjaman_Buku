@@ -14,44 +14,28 @@
                 </div>
 
                 <div class="col-12 col-md-6 mb-3">
-                    <label for="number_type" class="form-label">Tipe Nomor</label>
-                    <select name="number_type" id="number_type" class="form-control">
-                        @foreach (\App\Models\User::NUMBER_TYPES as $numberType)
-                            <option @selected(old('number_type') === $numberType) value="{{ $numberType }}">{{ $numberType }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('number_type')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="col-12 col-md-6 mb-3">
-                    <label for="number" class="form-label">Nomor</label>
-                    <input type="number" name="number" class="form-control" id="number"
-                        value="{{ old('number') }}">
-                    @error('number')
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" id="username" value="{{ old('username') }}">
+                    @error('username')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
 
                 <div class="col-12 mb-3">
                     <label for="address" class="form-label">Alamat</label>
-                    <input type="text" name="address" class="form-control" id="address"
-                        value="{{ old('address') }}">
+                    <input type="text" name="address" class="form-control" id="address" value="{{ old('address') }}">
                     @error('address')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
 
                 <div class="col-12 col-md-6 mb-3">
-                    <label for="telephone" class="form-label">Telepon <small class="ml-1">(contoh:
-                            6281234567890)</small></label>
+                    <label for="telephone" class="form-label">Telepon <small class="ml-1">(contoh: 6281234567890)</small></label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="telephoneLabel">+</span>
                         </div>
-                        <input type="number" name="telephone" id="telephone" class="form-control"
+                        <input type="text" name="telephone" id="telephone" class="form-control"
                             aria-label="Telephone" aria-describedby="telephoneLabel" value="{{ old('telephone') }}">
                     </div>
                     @error('telephone')

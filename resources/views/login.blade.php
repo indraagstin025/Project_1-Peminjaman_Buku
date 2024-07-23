@@ -1,46 +1,63 @@
 <x-guest-layout title="Login">
-    <a href="{{ route('home') }}" class="fw-bold fs-1 text-decoration-none text-black">Perpustakaan</a>
-    <h3>Login</h3>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-5"> 
+                <div class="card shadow-sm rounded-4"> 
+                    <div class="card-header bg-primary text-white text-center py-3">
+                        <h2 class="mb-0">
+                            <i class="fas fa-book-open me-2"></i> Perpustakaan
+                        </h2>
+                    </div>
 
-    <form action="{{ route('login') }}" method="POST"
-        class="w-100 d-flex flex-column justify-content-center align-items-center gap-4 my-4 px-4 text-start"
-        style="max-width: 500px">
-        @csrf
-        @method('POST')
+                    <div class="card-body p-4">
+                        <form action="{{ route('login') }}" method="POST">
+                            @csrf
 
-        <div class="w-100">
-            <label for="number" class="form-label">Nomor</label>
-            <input type="number" name="number" class="form-control" id="number" value="{{ old('number') }}" />
-            @error('number')
-                <small class="fs-6 text-danger">{{ $message }}</small>
-            @enderror
-        </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" name="username" class="form-control" id="username" value="{{ old('username') }}">
+                                </div>
+                                @error('username')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-        <div class="w-100">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" id="password" />
-        </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" name="password" class="form-control" id="password">
+                                </div>
+                                @error('password')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-        <div class="w-100 d-flex justify-content-center">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                <label class="form-check-label" for="remember">
-                    Ingat saya
-                </label>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" name="remember" class="form-check-input" id="remember">
+                                <label class="form-check-label" for="remember">Ingat saya</label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill">Login</button>
+
+                            <div class="mt-3 text-center">
+                                Belum punya akun? <a href="{{ route('register') }}">Daftar!</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="w-100 d-grid">
-            <button type="submit" class="btn btn-primary">
-                <span class="fs-5">Login</span>
-            </button>
-        </div>
-
-        <div class="w-100 d-flex justify-content-end">
-            <span>
-                Belum punya akun?
-                <a href="{{ route('register') }}">Daftar!</a>
-            </span>
-        </div>
-    </form>
+    </div>
+    <script>
+        @if(session('login_error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Gagal',
+                text: '{{ session('login_error') }}',
+            });
+        @endif
+    </script>
 </x-guest-layout>

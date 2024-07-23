@@ -16,22 +16,11 @@
             @enderror
         </div>
 
+   
         <div class="w-100">
-            <label for="number_type" class="form-label">Tipe Nomor</label>
-            <select name="number_type" class="form-select" id="number_type" aria-label="Pilih tipe nomor">
-                @foreach (App\Models\User::NUMBER_TYPES as $numberType)
-                    <option @selected(old('number_type') === $numberType) value="{{ $numberType }}">{{ $numberType }}</option>
-                @endforeach
-            </select>
-            @error('number_type')
-                <small class="fs-6 text-danger">{{ $message }}</small>
-            @enderror
-        </div>
-
-        <div class="w-100">
-            <label for="number" class="form-label">Nomor</label>
-            <input type="number" name="number" class="form-control" id="number" value="{{ old('number') }}" />
-            @error('number')
+            <label for="username" class="form-label">Username</label>
+            <input type="username" name="username" class="form-control" id="username" value="{{ old('username') }}" />
+            @error('username')
                 <small class="fs-6 text-danger">{{ $message }}</small>
             @enderror
         </div>

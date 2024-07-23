@@ -13,7 +13,6 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-        
         $books = Book::query();
 
         $books->when($request->search, function (Builder $query) use ($request) {
@@ -56,7 +55,10 @@ class BookController extends Controller
             $book['cover'] = $request->file('cover')->store('covers');
         }
 
-        Book::create($book);
+        $createdBook = Book::create($book);
+
+        // Update status if amount is 0 or more
+        $this->updateBookStatus($createdBook);
 
         return redirect()
             ->route('admin.books.index')
@@ -92,6 +94,9 @@ class BookController extends Controller
 
         $book->update($data);
 
+        // Update status based on amount
+        $this->updateBookStatus($book);
+
         return redirect()
             ->route('admin.books.index')
             ->with('success', 'Berhasil mengedit buku.');
@@ -108,5 +113,22 @@ class BookController extends Controller
         return redirect()
             ->route('admin.books.index')
             ->with('success', 'Berhasil menghapus buku.');
+    }
+
+    /**
+     * Update the status of the book based on its amount.
+     *
+     * @param Book $book
+     * @return void
+     */
+    protected function updateBookStatus(Book $book)
+    {
+        if ($book->amount <= 0) {
+            $book->status = Book::STATUSES['Unavailable'];
+        } else {
+            $book->status = Book::STATUSES['Available'];
+        }
+
+        $book->save();
     }
 }

@@ -5,8 +5,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ $title ?? 'Perpustakaan' }}</title>
-    <link rel="icon" type="image/png" href="{{ asset('/') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body

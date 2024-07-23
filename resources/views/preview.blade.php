@@ -31,35 +31,41 @@
                 </div>
 
                 @if (auth()->check())
-                    <form class="my-5" action="{{ route('my-books.store', $book) }}" method="POST">
-                        @csrf
-                        @method('POST')
-                        
-                        <div class="row row-cols-1 row-cols-lg-2 mb-3">
-                            <div>
-                                <label for="duration">Durasi</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" name="duration" value="{{ old('duration') }}">
-                                    <span class="input-group-text">hari</span>
+                    <!-- Pengecekan status buku -->
+                    @if ($book->status === \App\Models\Book::STATUSES['Available'])
+                        <form class="my-5" action="{{ route('my-books.store', $book) }}" method="POST">
+                            @csrf
+                            @method('POST')
+                            
+                            <div class="row row-cols-1 row-cols-lg-2 mb-3">
+                                <div>
+                                    <label for="duration">Durasi</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="duration" value="{{ old('duration') }}">
+                                        <span class="input-group-text">hari</span>
+                                    </div>
+                                    @error('duration')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('duration')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label for="amount">Jumlah Buku (maks: {{ $book->amount }} buku)</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" name="amount" value="{{ old('amount') }}">
-                                    <span class="input-group-text">buku</span>
+                                <div>
+                                    <label for="amount">Jumlah Buku (maks: {{ $book->amount }} buku)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" name="amount" value="{{ old('amount') }}">
+                                        <span class="input-group-text">buku</span>
+                                    </div>
+                                    @error('amount')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('amount')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
                             </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-lg d-block mx-auto px-5">Pinjam
-                            Buku</button>
-                    </form>
+                            <button type="submit" class="btn btn-primary btn-lg d-block mx-auto px-5">Pinjam Buku</button>
+                        </form>
+                    @else
+                        <button type="button" class="btn btn-outline-secondary btn-lg d-block mx-auto px-5 my-5" disabled>
+                            Buku tidak tersedia
+                        </button>
+                    @endif
 
                     {{-- Form untuk menambahkan ke wishlist --}}
                     <form action="{{ route('wishlists.store', $book) }}" method="POST">
@@ -76,7 +82,7 @@
 
                 <!-- Review and Rating Section -->
                 <div class="mt-5">
-                    <h3>Rating: {{ round($book->average_rating, 1) }} / 5 ({{ $book->total_reviews }} ulasan)</h3>
+                    <h3>Rating: {{ round($book->average_rating, 1) }} / 5 ({{ $book->reviews->count() }} ulasan)</h3>
                     @foreach ($book->reviews as $review)
                         <div class="mb-3">
                             <strong>{{ $review->user->name }}</strong>
@@ -91,7 +97,7 @@
                 </div>
 
                 @if (auth()->check() && auth()->user()->role === 'Member')
-                    @if (!$book->reviews()->where('user_id', auth()->id())->exists())
+                    @if (!$book->reviews->where('user_id', auth()->id())->count())
                         <form action="{{ route('reviews.store', $book) }}" method="POST">
                             @csrf
                             <div class="mb-3">
@@ -119,6 +125,8 @@
                     @else
                         <p>Anda sudah memberikan review untuk buku ini.</p>
                     @endif
+                @else
+                    <p>Anda harus login sebagai Member untuk memberikan review.</p>
                 @endif
             </div>
         </div>

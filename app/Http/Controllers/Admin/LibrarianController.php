@@ -19,8 +19,7 @@ class LibrarianController extends Controller
         $librarians->when($request->search, function (Builder $query) use ($request) {
             $query->where(function (Builder $q) use ($request) {
                 $q->where('name', 'LIKE', "%{$request->search}%")
-                    ->orWhere('number_type', 'LIKE', "%{$request->search}%")
-                    ->orWhere('number', 'LIKE', "%{$request->search}%")
+                    ->orWhere('username', 'LIKE', "%{$request->search}%")
                     ->orWhere('telephone', 'LIKE', "%{$request->search}%");
             });
         });
@@ -41,10 +40,9 @@ class LibrarianController extends Controller
     {
         $credentials = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'number_type' => ['required', Rule::in(User::NUMBER_TYPES)],
-            'number' => ['required', 'numeric', 'unique:' . User::class],
+            'username' => ['required', 'string', 'unique:' . User::class],
             'address' => ['required', 'string', 'max:255'],
-            'telephone' => ['required', 'numeric'],
+            'telephone' => ['required', 'string'],
             'gender' => ['required', Rule::in(User::GENDERS)],
             'password' => ['required', 'string', 'confirmed', 'max:255'],
         ]);
@@ -62,7 +60,7 @@ class LibrarianController extends Controller
                 'success',
                 "Berhasil menambah pustakawan.
                 <br />
-                Nomor: {$credentials['number']}
+                Username: {$credentials['username']}
                 <br />
                 Password: {$password}"
             );
@@ -85,18 +83,17 @@ class LibrarianController extends Controller
 
         $credentials = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'number_type' => ['required', Rule::in(User::NUMBER_TYPES)],
-            'number' => ['required', 'numeric', Rule::unique(User::class)->ignore($librarian->id)],
+            'username' => ['required', 'string', Rule::unique(User::class)->ignore($librarian->id)],
             'address' => ['required', 'string', 'max:255'],
-            'telephone' => ['required', 'numeric'],
+            'telephone' => ['required', 'string'],
             'gender' => ['required', Rule::in(User::GENDERS)],
         ]);
 
         $credentials['role'] = User::ROLES['Librarian'];
 
-        $successMessage = "Berhasil mengedit pustakawan. <br /> Nomor: {$credentials['number']}";
+        $successMessage = "Berhasil mengedit pustakawan. <br /> Username: {$credentials['username']}";
 
-        if (isset($request->password)) {
+        if ($request->filled('password')) {
             $newPassword = $request->validate([
                 'password' => ['required', 'string', 'confirmed', 'max:255'],
             ])['password'];
