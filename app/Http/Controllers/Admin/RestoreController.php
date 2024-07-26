@@ -44,34 +44,35 @@ class RestoreController extends Controller
 
     public function update(Request $request, $id)
     {
-        $restore = Restore::query()->findOrFail($id);
-
+        $restore = Restore::findOrFail($id);
+    
         $data = $request->validate([
             'confirmation' => ['required', 'boolean'],
-            'fine' => [Rule::when($restore->returned_at > $restore->borrow->borrowed_at->addDays($restore->borrow->duration) && is_null($restore->fine), ['required', 'numeric'])],
+            'fine' => ['nullable', 'numeric'],
         ]);
-
+    
         if ($data['confirmation']) {
-            // Increment book amount
+            // Increment jumlah buku
             $restore->book()->increment('amount', $restore->borrow->amount);
-
-            // Update book status to 'Available' if amount > 0
+    
+            // Update status buku menjadi 'Available' jika jumlah > 0
             $book = $restore->book;
             if ($book->amount > 0) {
                 $book->update(['status' => Book::STATUSES['Available']]);
             }
-
+    
             $data['status'] = Restore::STATUSES['Returned'];
         } else if (isset($data['fine'])) {
             $data['status'] = Restore::STATUSES['Fine not paid'];
         }
-
+    
         $restore->update($data);
-
+    
         return redirect()
             ->route('admin.returns.index')
             ->with('success', 'Berhasil mengubah status konfirmasi pengembalian.');
     }
+    
 
     public function destroy($id)
     {

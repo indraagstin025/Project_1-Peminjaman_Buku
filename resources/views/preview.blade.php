@@ -31,6 +31,13 @@
                 </div>
 
                 @if (auth()->check())
+                    <!-- Tampilkan pesan error jika ada -->
+                    @if ($errors->has('book'))
+                        <div class="alert alert-danger">
+                            {{ $errors->first('book') }}
+                        </div>
+                    @endif
+
                     <!-- Pengecekan status buku -->
                     @if ($book->status === \App\Models\Book::STATUSES['Available'])
                         <form class="my-5" action="{{ route('my-books.store', $book) }}" method="POST">

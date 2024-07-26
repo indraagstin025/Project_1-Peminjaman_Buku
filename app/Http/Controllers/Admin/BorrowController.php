@@ -62,6 +62,46 @@ class BorrowController extends Controller
             ->with('success', 'Berhasil mengubah status konfirmasi peminjaman.');
     }
 
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'book_id' => ['required', 'exists:books,id'],
+            'user_id' => ['required', 'exists:users,id'],
+            'duration' => ['required', 'integer'],
+        ]);
+
+        $book = Book::findOrFail($data['book_id']);
+        $user = auth()->user();
+
+        // Check if the user already borrowed the book and hasn't returned it yet
+        $existingBorrowCount = Borrow::where('user_id', $data['user_id'])
+            ->where('book_id', $data['book_id'])
+            ->whereNull('returned_at')
+            ->count();
+
+        if ($existingBorrowCount >= 3) {
+            return redirect()
+                ->back()
+                ->with('error', 'You have already borrowed the maximum of 3 copies of this book and haven\'t returned them yet.');
+        }
+
+        if ($book->amount < 1) {
+            return redirect()
+                ->back()
+                ->with('error', 'This book is currently not available for borrowing.');
+        }
+
+        Borrow::create($data);
+
+        // Decrease the amount of the book
+        $book->decrement('amount');
+
+        return redirect()
+            ->route('admin.borrows.index')
+            ->with('success', 'Book borrowed successfully.');
+    }
+
     public function destroy(Borrow $borrow)
     {
         $borrow->book()->increment('amount', $borrow->amount);

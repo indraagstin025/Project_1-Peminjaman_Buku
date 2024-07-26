@@ -39,6 +39,13 @@ class BookController extends Controller
 
     public function store(Request $request)
     {
+        // Periksa jumlah buku yang ada saat ini
+        if (Book::count() >= 10) {
+            return redirect()
+                ->route('admin.books.index')
+                ->with('error', 'Maksimal jumlah buku yang dapat dimasukkan adalah 10.');
+        }
+
         $book = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'synopsis' => ['required', 'string'],
@@ -47,7 +54,7 @@ class BookController extends Controller
             'publish_year' => ['required', 'numeric'],
             'cover' => ['nullable', 'file', 'image', 'max:2048'],
             'category' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'numeric'],
+            'amount' => ['required', 'numeric', 'max:10'],
             'status' => ['required', Rule::in(Book::STATUSES)],
         ]);
 
@@ -72,6 +79,16 @@ class BookController extends Controller
 
     public function update(Request $request, Book $book)
     {
+        // Hitung jumlah buku selain buku yang sedang diupdate
+        $currentBookCount = Book::where('id', '!=', $book->id)->count();
+
+        // Jika jumlah buku selain yang sedang diupdate >= 10, batalkan update
+        if ($currentBookCount >= 10) {
+            return redirect()
+                ->route('admin.books.index')
+                ->with('error', 'Maksimal jumlah buku yang dapat dimasukkan adalah 10.');
+        }
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'synopsis' => ['required', 'string'],
@@ -80,7 +97,7 @@ class BookController extends Controller
             'publish_year' => ['required', 'numeric'],
             'cover' => ['nullable', 'file', 'image', 'max:2048'],
             'category' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'numeric'],
+            'amount' => ['required', 'numeric', 'max:10'],
             'status' => ['required', Rule::in(Book::STATUSES)],
         ]);
 

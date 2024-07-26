@@ -22,6 +22,14 @@
                             <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
                                 @if (!$currentBorrow->confirmation)
                                     <span class="text-warning">Belum dikonfirmasi</span>
+
+                                    <!-- Form Pembatalan Peminjaman -->
+                                    <form action="{{ route('my-books.cancel', $currentBorrow->id) }}" method="POST" onsubmit="return confirm('Anda yakin ingin membatalkan peminjaman buku ini?')">
+                                        @csrf
+                                        @method('POST')
+                                        <button type="submit" class="btn btn-danger btn-sm">Batalkan Peminjaman</button>
+                                    </form>
+
                                 @else
                                     @switch($currentBorrow->restore?->status)
                                         @case(\App\Models\Restore::STATUSES['Not confirmed'])

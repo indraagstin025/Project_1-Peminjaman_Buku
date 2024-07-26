@@ -42,6 +42,8 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('/my-books', MyBookController::class)->only('index', 'update');
     Route::post('/my-books/{book}', [MyBookController::class, 'store'])->name('my-books.store');
+    Route::post('/my-books/{id}/cancel', [MyBookController::class, 'cancel'])->name('my-books.cancel');
+
 
     Route::middleware('superuser')->prefix('/admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

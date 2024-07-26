@@ -24,14 +24,17 @@ class Borrow extends Model
         'borrowed_at' => 'datetime',
     ];
 
+    // Relasi dengan model Book
     public function book() {
         return $this->belongsTo(Book::class);
     }
 
+    // Relasi dengan model User
     public function user() {
         return $this->belongsTo(User::class);
     }
 
+    // Relasi dengan model Restore (pengembalian)
     public function restore() {
         return $this->hasOne(Restore::class);
     }
