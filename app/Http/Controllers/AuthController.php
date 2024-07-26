@@ -37,21 +37,26 @@ class AuthController extends Controller
             'username' => ['required'],
             'password' => ['required'],
         ]);
-
+    
         $user = User::where('username', $credentials['username'])->first();
-
+    
         if (!$user) {
             // Username tidak valid
             return back()->with('login_error', 'Username anda tidak valid.')->onlyInput('username');
         }
-
+    
+        // Memastikan username yang dimasukkan sesuai dengan yang disimpan di database
+        if ($user->username !== $credentials['username']) {
+            return back()->with('login_error', 'Username anda tidak valid.')->onlyInput('username');
+        }
+    
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             // Password tidak valid
             return back()->with('login_error', 'Password anda tidak valid.')->onlyInput('username');
         }
-
+    
         $request->session()->regenerate();
-
+    
         return redirect()->intended(route('home'));
     }
 

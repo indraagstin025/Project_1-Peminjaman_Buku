@@ -5,7 +5,7 @@
         <br>
         <div class="row row-cols-1 row-cols-lg-2 g-5" style="padding-top: 7rem; padding-bottom: 3rem">
             <div class="col">
-                <img class="d-block rounded-4 mx-auto width" style="width: 50%"
+                <img class="d-block rounded-4 mx-auto" style="width: 50%"
                     src="{{ isset($book->cover) ? asset('storage/' . $book->cover) : asset('storage/placeholder.png') }}"
                     alt="{{ $book->title }}" />
             </div>
@@ -39,35 +39,51 @@
                     @endif
 
                     <!-- Pengecekan status buku -->
+                    @php
+                        $userId = auth()->id();
+                        $amountBorrowed = \App\Models\Borrow::where('user_id', $userId)
+                            ->where('book_id', $book->id)
+                            ->whereDoesntHave('restore')
+                            ->sum('amount');
+                        $maxAllowed = 2; // Maksimal buku yang bisa dipinjam per jenis
+                        $remaining = $maxAllowed - $amountBorrowed;
+                    @endphp
+
                     @if ($book->status === \App\Models\Book::STATUSES['Available'])
-                        <form class="my-5" action="{{ route('my-books.store', $book) }}" method="POST">
-                            @csrf
-                            @method('POST')
-                            
-                            <div class="row row-cols-1 row-cols-lg-2 mb-3">
-                                <div>
-                                    <label for="duration">Durasi</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" name="duration" value="{{ old('duration') }}">
-                                        <span class="input-group-text">hari</span>
+                        @if ($remaining > 0)
+                            <form class="my-5" action="{{ route('my-books.store', $book) }}" method="POST">
+                                @csrf
+                                @method('POST')
+                                
+                                <div class="row row-cols-1 row-cols-lg-2 mb-3">
+                                    <div>
+                                        <label for="duration">Durasi (maks 7 hari)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="duration" value="{{ old('duration') }}" min="1" max="7">
+                                            <span class="input-group-text">hari</span>
+                                        </div>
+                                        @error('duration')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                    @error('duration')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div>
-                                    <label for="amount">Jumlah Buku (maks: {{ $book->amount }} buku)</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" name="amount" value="{{ old('amount') }}">
-                                        <span class="input-group-text">buku</span>
+                                    <div>
+                                        <label for="amount">Jumlah Buku (maks: {{ $remaining }} buku)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="amount" value="{{ old('amount') }}" max="{{ $remaining }}">
+                                            <span class="input-group-text">buku</span>
+                                        </div>
+                                        @error('amount')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                    @error('amount')
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
                                 </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-lg d-block mx-auto px-5">Pinjam Buku</button>
-                        </form>
+                                <button type="submit" class="btn btn-primary btn-lg d-block mx-auto px-5">Pinjam Buku</button>
+                            </form>
+                        @else
+                            <button type="button" class="btn btn-outline-secondary btn-lg d-block mx-auto px-5 my-5" disabled>
+                                Anda sudah mencapai batas maksimal peminjaman buku dari jenis ini.
+                            </button>
+                        @endif
                     @else
                         <button type="button" class="btn btn-outline-secondary btn-lg d-block mx-auto px-5 my-5" disabled>
                             Buku tidak tersedia
