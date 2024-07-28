@@ -1,8 +1,7 @@
 <x-admin-layout title="Edit Buku">
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form class="row" action="{{ route('admin.books.update', $book) }}" method="POST"
-                enctype="multipart/form-data">
+            <form id="editBookForm" class="row" action="{{ route('admin.books.update', $book) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -98,7 +97,7 @@
 
                 <div class="d-flex w-100 mt-3 justify-content-end">
                     <a href="{{ route('admin.books.index') }}" class="btn btn-warning mx-3">Kembali</a>
-                    <button type="submit" class="btn btn-primary mx-3">Edit</button>
+                    <button type="button" id="submitBtn" class="btn btn-primary mx-3">Edit</button>
                 </div>
             </form>
         </div>
@@ -106,6 +105,7 @@
 
     @section('scripts')
         <script src="{{ asset('assets/js/ckeditor.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
         <script>
             ClassicEditor
                 .create(document.getElementById('synopsis'))
@@ -116,6 +116,28 @@
             document.getElementById('cover').onchange = (event) => {
                 if (event.target.files[0]) {
                     document.getElementById('bookCover').src = URL.createObjectURL(event.target.files[0]);
+                }
+            };
+
+            document.getElementById('submitBtn').onclick = () => {
+                let form = document.getElementById('editBookForm');
+                let title = document.getElementById('title').value.trim();
+                let writer = document.getElementById('writer').value.trim();
+                let synopsis = document.getElementById('synopsis').value.trim();
+                let category = document.getElementById('category').value.trim();
+                let publisher = document.getElementById('publisher').value.trim();
+                let publish_year = document.getElementById('publish_year').value.trim();
+                let amount = document.getElementById('amount').value.trim();
+                let status = document.getElementById('status').value.trim();
+                
+                if (!title || !writer || !synopsis || !category || !publisher || !publish_year || !amount || !status) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Mohon lengkapi semua field yang wajib diisi!',
+                    });
+                } else {
+                    form.submit();
                 }
             };
         </script>

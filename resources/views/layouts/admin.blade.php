@@ -26,6 +26,8 @@
 
     <!-- Custom scripts for all pages-->
     <script defer src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body id="page-top">

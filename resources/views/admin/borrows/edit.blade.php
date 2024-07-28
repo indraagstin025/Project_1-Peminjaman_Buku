@@ -1,7 +1,7 @@
 <x-admin-layout title="Edit Peminjaman">
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form class="row" action="{{ route('admin.borrows.update', $borrow) }}" method="POST"
+            <form id="confirm-borrow-form" class="row" action="{{ route('admin.borrows.update', $borrow) }}" method="POST"
                 enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -11,7 +11,7 @@
                         <span class="text-success my-auto mr-3">Peminjaman ini telah terkonfirmasi.</span>
                     @else
                         <input type="hidden" name="confirmation" value="1">
-                        <button type="submit" class="btn btn-success mx-3">Konfirmasi</button>
+                        <button type="button" id="confirm-borrow-btn" class="btn btn-success mx-3">Konfirmasi</button>
                     @endif
 
                     <a href="{{ route('admin.borrows.index') }}" class="btn btn-warning mx-3">Kembali</a>
@@ -59,4 +59,25 @@
             </form>
         </div>
     </div>
+
+    @section('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('confirm-borrow-btn').addEventListener('click', function(event) {
+                    Swal.fire({
+                        title: 'Apakah Anda yakin ingin mengonfirmasi peminjaman ini?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Iya',
+                        cancelButtonText: 'Tidak'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('confirm-borrow-form').submit();
+                        }
+                    });
+                });
+            });
+        </script>
+    @endsection
 </x-admin-layout>

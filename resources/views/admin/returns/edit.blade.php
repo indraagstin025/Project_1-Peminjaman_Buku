@@ -1,7 +1,7 @@
 <x-admin-layout title="Edit Pengembalian">
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form class="row" action="{{ route('admin.returns.update', $restore) }}" method="POST">
+            <form class="row" action="{{ route('admin.returns.update', $restore) }}" method="POST" onsubmit="return confirmSubmit(event)">
                 @csrf
                 @method('PUT')
 
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="col-12 col-md-4 mb-3">
-                    <label for="name" class="form-label">Jumlah Pinjam</label>
+                    <label for="amount" class="form-label">Jumlah Pinjam</label>
                     <input type="text" name="amount" class="form-control" id="amount"
                         value="{{ $restore->borrow->amount . ' hari' }}" disabled>
                 </div>
@@ -77,4 +77,26 @@
             </form>
         </div>
     </div>
+
+    @section('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function confirmSubmit(event) {
+                event.preventDefault();
+                const form = event.target;
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin ingin mengonfirmasi peminjaman ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Iya',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+        </script>
+    @endsection
 </x-admin-layout>
