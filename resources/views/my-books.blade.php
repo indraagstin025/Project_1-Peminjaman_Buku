@@ -12,24 +12,32 @@
             </div>
         @enderror
 
-        <h2 class="mt-4 fs-4 fw-bold ms-4 mb-4 text-center">Sedang di-pinjam</h2>
+        <h2 class="mt-4 fs-4 fw-bold ms-4 mb-4 text-uppercase text-left" style="font-size: 24px;">Sedang di-pinjam</h2>
 
         <div class="container">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-                @foreach ($currentBorrows as $currentBorrow)
-                    <a href="{{ route('preview', $currentBorrow->book) }}" class="col text-dark text-decoration-none">
-                        <div class="card">
-                            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Cover</th>
+                        <th scope="col">Judul Buku</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Tenggat</th>
+                        <th scope="col">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($currentBorrows as $currentBorrow)
+                        <tr>
+                            <td>
+                                <a href="{{ route('preview', $currentBorrow->book) }}">
+                                    <img src="{{ isset($currentBorrow->book->cover) ? asset('storage/' . $currentBorrow->book->cover) : asset('storage/placeholder.png') }}"
+                                        alt="{{ $currentBorrow->book->title }}" class="img-thumbnail" style="max-width: 100px;">
+                                </a>
+                            </td>
+                            <td>{{ $currentBorrow->book->title }}</td>
+                            <td>
                                 @if (!$currentBorrow->confirmation)
                                     <span class="text-warning">Belum dikonfirmasi</span>
-
-                                    <!-- Form Pembatalan Peminjaman -->
-                                    <form action="{{ route('my-books.cancel', $currentBorrow->id) }}" method="POST" onsubmit="return confirm('Anda yakin ingin membatalkan peminjaman buku ini?')">
-                                        @csrf
-                                        @method('POST')
-                                        <button type="submit" class="btn btn-danger btn-sm">Batalkan Peminjaman</button>
-                                    </form>
-
                                 @else
                                     @switch($currentBorrow->restore?->status)
                                         @case(\App\Models\Restore::STATUSES['Not confirmed'])
@@ -41,39 +49,41 @@
                                             <span class="text-danger">
                                                 Denda terlambat: Rp
                                                 {{ number_format($currentBorrow->restore->fine, 0, ',', '.') }},-
-                                                <br />
                                             </span>
                                         @break
 
                                         @default
                                             <span class="text-success">Terkonfirmasi</span>
-
-                                            <form action="{{ route('my-books.update', $currentBorrow) }}" method="POST" onsubmit="return confirm('Anda yakin ingin mengembalikan buku ini?')">
-                                                @csrf
-                                                @method('PUT')
-                                                <button type="submit" class="btn btn-link p-0">Kembalikan</button>
-                                            </form>
                                     @endswitch
                                 @endif
-                            </div>
-
-                            <img src="{{ isset($currentBorrow->book->cover) ? asset('storage/' . $currentBorrow->book->cover) : asset('storage/placeholder.png') }}"
-                                alt="{{ $currentBorrow->book->title }}" class="card-img-top rounded-0">
-
-                            <div class="card-body text-center">
-                                <h3 class="card-text fs-5 fw-bold mb-5">{{ $currentBorrow->book->title }}</h3>
-                                <span class="fs-6">Tenggat
-                                    @php
-                                        $due = $currentBorrow->borrowed_at->addDays($currentBorrow->duration);
-                                    @endphp
-                                    <span
-                                        class="fw-bold text-decoration-underline text-{{ $due > now() ? 'success' : 'danger' }}">{{ $due->locale('id_ID')->diffForHumans() }}</span>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
+                            </td>
+                            <td>
+                                @php
+                                    $due = $currentBorrow->borrowed_at->addDays($currentBorrow->duration);
+                                @endphp
+                                <span class="fw-bold text-{{ $due > now() ? 'success' : 'danger' }}">{{ $due->locale('id_ID')->diffForHumans() }}</span>
+                            </td>
+                            <td>
+                                @if (!$currentBorrow->confirmation)
+                                    <form action="{{ route('my-books.cancel', $currentBorrow->id) }}" method="POST" class="cancel-form">
+                                        @csrf
+                                        @method('POST')
+                                        <button type="button" class="btn btn-danger btn-sm cancel-btn">Batalkan Peminjaman</button>
+                                    </form>
+                                @else
+                                    @if ($currentBorrow->restore?->status !== \App\Models\Restore::STATUSES['Fine not paid'])
+                                        <form action="{{ route('my-books.update', $currentBorrow) }}" method="POST" class="return-form">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="button" class="btn btn-success btn-sm return-btn">Kembalikan</button>
+                                        </form>
+                                    @endif
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
             <div class="mt-4">
                 {{ $currentBorrows->links() }}
@@ -82,26 +92,79 @@
     </section>
 
     <section class="py-5 bg-body-tertiary">
-        <h2 class="fs-4 fw-bold ms-4 mb-4 text-center">Peminjaman terbaru anda</h2>
+        <h2 class="fs-4 fw-bold ms-4 mb-4 text-uppercase text-left" style="font-size: 24px;">Peminjaman terbaru anda</h2>
 
         <div class="container">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-                @foreach ($recentBorrows as $recentBorrow)
-                    <a href="{{ route('preview', $recentBorrow->book) }}" class="col text-dark text-decoration-none">
-                        <div class="card">
-                            <img src="{{ isset($recentBorrow->book->cover) ? asset('storage/' . $recentBorrow->book->cover) : asset('storage/placeholder.png') }}"
-                                alt="{{ $recentBorrow->book->title }}" class="card-img-top">
-                            <div class="card-body text-center">
-                                <h3 class="card-text fs-5 fw-bold mb-5">{{ $recentBorrow->book->title }}</h3>
-                                <span class="fs-6">Meminjam tanggal
-                                    <span
-                                        class="fw-bold text-decoration-underline">{{ $recentBorrow->restore->returned_at->locale('id_ID')->isoFormat('LL') }}</span>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Cover</th>
+                        <th scope="col">Judul Buku</th>
+                        <th scope="col">Tanggal Pinjam</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($recentBorrows as $recentBorrow)
+                        <tr>
+                            <td>
+                                <a href="{{ route('preview', $recentBorrow->book) }}">
+                                    <img src="{{ isset($recentBorrow->book->cover) ? asset('storage/' . $recentBorrow->book->cover) : asset('storage/placeholder.png') }}"
+                                        alt="{{ $recentBorrow->book->title }}" class="img-thumbnail" style="max-width: 100px;">
+                                </a>
+                            </td>
+                            <td>{{ $recentBorrow->book->title }}</td>
+                            <td>
+                                <span class="fw-bold text-decoration-underline">{{ $recentBorrow->restore->returned_at->locale('id_ID')->isoFormat('LL') }}</span>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cancelForms = document.querySelectorAll('.cancel-form');
+            const returnForms = document.querySelectorAll('.return-form');
+
+            cancelForms.forEach(form => {
+                form.querySelector('.cancel-btn').addEventListener('click', function() {
+                    Swal.fire({
+                        title: 'Anda yakin?',
+                        text: "Anda yakin ingin membatalkan peminjaman buku ini?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, batalkan!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            returnForms.forEach(form => {
+                form.querySelector('.return-btn').addEventListener('click', function() {
+                    Swal.fire({
+                        title: 'Anda yakin?',
+                        text: "Anda yakin ingin mengembalikan buku ini?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, kembalikan!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </x-app-layout>

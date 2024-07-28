@@ -1,9 +1,10 @@
 <x-app-layout>
-    <section class="hero-section">
-        <div class="container text-center py-5">
+    <section class="hero-section" style="background: url('your-background-image.jpg') no-repeat center center; background-size: cover; position: relative;">
+        <div style="background: rgba(0, 0, 0, 0.6); position: absolute; top: 0; left: 0; right: 0; bottom: 0;"></div>
+        <div class="container text-center py-5" style="position: relative; z-index: 2;">
             <br><br><br>
-            <h1 class="display-4 fw-bold d-none d-md-block">Selamat Datang di Pinjam Buku!</h1>
-            <h2 class="fw-bold d-block d-md-none">Selamat Datang di Pinjam Buku!</h2>
+            <h1 class="display-4 fw-bold text-white d-none d-md-block">Selamat Datang di Pinjam Buku!</h1>
+            <h2 class="fw-bold text-white d-block d-md-none">Selamat Datang di Pinjam Buku!</h2>
             <form action="{{ route('search') }}" method="GET" class="search-form mt-4">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Cari buku...">
@@ -40,90 +41,24 @@
 
             <div class="tab-content mt-4" id="categoryTabsContent">
                 <!-- Konten tab -->
-                <div class="tab-pane fade show active" id="popular" role="tabpanel" aria-labelledby="popular-tab">
+                @foreach (['popular' => $popularBooks, 'newest' => $newestBooks, 'novel' => $novelBooks, 'comic' => $comicBooks, 'encyclopedia' => $encyclopediaBooks] as $category => $books)
+                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ $category }}" role="tabpanel" aria-labelledby="{{ $category }}-tab">
                     <div class="row row-cols-1 row-cols-md-4 g-4">
-                        @foreach ($popularBooks as $popularBook)
+                        @foreach ($books as $book)
                         <div class="col mb-4">
                             <div class="card h-100 shadow-sm">
-                                <img src="{{ isset($popularBook->cover) ? asset('storage/' . $popularBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top img-fluid" style="height: 400px; object-fit: cover;" alt="{{ $popularBook->title }}">
+                                <img src="{{ isset($book->cover) ? asset('storage/' . $book->cover) : asset('storage/placeholder.png') }}" class="card-img-top img-fluid" style="height: 400px; object-fit: cover;" alt="{{ $book->title }}">
                                 <div class="card-body">
-                                    <h5 class="card-title fw-bold">{{ $popularBook->title }}</h5>
-                                    <p class="card-text">Dipinjam <span class="fw-bold">{{ $popularBook->borrows_count }}</span> kali</p>
-                                    <a href="{{ route('preview', $popularBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
+                                    <h5 class="card-title fw-bold">{{ $book->title }}</h5>
+                                    <p class="card-text">{{ $category == 'popular' ? "Dipinjam " . $book->borrows_count . " kali" : ($category == 'newest' ? "Terbit " . $book->created_at->locale('id_ID')->diffForHumans() : "Kategori: " . ucfirst($category)) }}</p>
+                                    <a href="{{ route('preview', $book) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
                                 </div>
                             </div>
                         </div>
                         @endforeach
                     </div>
                 </div>
-
-                <div class="tab-pane fade" id="newest" role="tabpanel" aria-labelledby="newest-tab">
-                    <div class="row row-cols-1 row-cols-md-4 g-4">
-                        @foreach ($newestBooks as $newestBook)
-                        <div class="col mb-4">
-                            <div class="card h-100 shadow-sm">
-                                <img src="{{ isset($newestBook->cover) ? asset('storage/' . $newestBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top img-fluid" style="height: 400px; object-fit: cover;" alt="{{ $newestBook->title }}">
-                                <div class="card-body">
-                                    <h5 class="card-title fw-bold">{{ $newestBook->title }}</h5>
-                                    <p class="card-text">Terbit {{ $newestBook->created_at->locale('id_ID')->diffForHumans() }}</p>
-                                    <a href="{{ route('preview', $newestBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="novel" role="tabpanel" aria-labelledby="novel-tab">
-                    <div class="row row-cols-1 row-cols-md-4 g-4">
-                        @foreach ($novelBooks as $novelBook)
-                        <div class="col mb-4">
-                            <div class="card h-100 shadow-sm">
-                                <img src="{{ isset($novelBook->cover) ? asset('storage/' . $novelBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top img-fluid" style="height: 400px; object-fit: cover;" alt="{{ $novelBook->title }}">
-                                <div class="card-body">
-                                    <h5 class="card-title fw-bold">{{ $novelBook->title }}</h5>
-                                    <p class="card-text">Kategori: Novel</p>
-                                    <a href="{{ route('preview', $novelBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="comic" role="tabpanel" aria-labelledby="comic-tab">
-                    <div class="row row-cols-1 row-cols-md-4 g-4">
-                        @foreach ($comicBooks as $comicBook)
-                        <div class="col mb-4">
-                            <div class="card h-100 shadow-sm">
-                                <img src="{{ isset($comicBook->cover) ? asset('storage/' . $comicBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top img-fluid" style="height: 400px; object-fit: cover;" alt="{{ $comicBook->title }}">
-                                <div class="card-body">
-                                    <h5 class="card-title fw-bold">{{ $comicBook->title }}</h5>
-                                    <p class="card-text">Kategori: Komik</p>
-                                    <a href="{{ route('preview', $comicBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="encyclopedia" role="tabpanel" aria-labelledby="encyclopedia-tab">
-                    <div class="row row-cols-1 row-cols-md-4 g-4">
-                        @foreach ($encyclopediaBooks as $encyclopediaBook)
-                        <div class="col mb-4">
-                            <div class="card h-100 shadow-sm">
-                                <img src="{{ isset($encyclopediaBook->cover) ? asset('storage/' . $encyclopediaBook->cover) : asset('storage/placeholder.png') }}" class="card-img-top img-fluid" style="height: 400px; object-fit: cover;" alt="{{ $encyclopediaBook->title }}">
-                                <div class="card-body">
-                                    <h5 class="card-title fw-bold">{{ $encyclopediaBook->title }}</h5>
-                                    <p class="card-text">Kategori: Ensiklopedia</p>
-                                    <a href="{{ route('preview', $encyclopediaBook) }}" class="btn btn-primary stretched-link">Lihat Detail</a>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>
