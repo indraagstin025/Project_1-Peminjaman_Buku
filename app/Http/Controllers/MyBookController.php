@@ -39,7 +39,7 @@ class MyBookController extends Controller
 
     public function update($id)
     {
-        $borrow = Borrow::query()->findOrFail($id);
+        $borrow = Borrow::findOrFail($id);
 
         if (!$borrow->confirmation || isset($borrow->restore)) {
             return back()->withErrors('Peminjaman ini tidak sesuai!');
@@ -54,6 +54,7 @@ class MyBookController extends Controller
             'book_id' => $borrow->book->id,
             'user_id' => auth()->id(),
             'borrow_id' => $borrow->id,
+            'amount' => $borrow->amount,  // Track the amount being returned
         ]);
 
         return redirect()->route('my-books.index')->with('success', 'Berhasil mengajukan pengembalian!');
@@ -63,7 +64,9 @@ class MyBookController extends Controller
     {
         return Borrow::where('user_id', $userId)
             ->where('book_id', $bookId)
-            ->whereDoesntHave('restore')
+            ->whereDoesntHave('restore', function (Builder $query) {
+                $query->where('confirmation', true);
+            })
             ->exists();
     }
 
@@ -71,7 +74,9 @@ class MyBookController extends Controller
     {
         return Borrow::where('user_id', $userId)
             ->where('book_id', $bookId)
-            ->whereDoesntHave('restore')
+            ->whereDoesntHave('restore', function (Builder $query) {
+                $query->where('confirmation', true);
+            })
             ->sum('amount');
     }
 
@@ -79,21 +84,35 @@ class MyBookController extends Controller
     {
         $userId = auth()->id();
         $amountRequested = $request->amount;
-
+    
         // Check if the user has already borrowed this book and not returned it
         $amountBorrowed = $this->countBorrowedBooksByUser($userId, $book->id);
-
+    
         if ($amountBorrowed + $amountRequested > 2) {
             return redirect()
                 ->route('preview', $book)
-                ->withErrors(['amount' => 'Anda sudah meminjam maksimum 2 buku dari jenis ini.']);
+                ->withErrors(['amount' => 'Anda sudah mencapai batas maksimal peminjaman buku ini.']);
         }
-
+    
+        // Check if there is any pending return for this book
+        $pendingReturn = Borrow::where('user_id', $userId)
+            ->where('book_id', $book->id)
+            ->whereHas('restore', function (Builder $query) {
+                $query->where('confirmation', false);
+            })
+            ->exists();
+    
+        if ($pendingReturn) {
+            return redirect()
+                ->route('preview', $book)
+                ->withErrors(['amount' => 'Anda sudah mencapai batas maksimal peminjaman buku ini.']);
+        }
+    
         $request->validate([
             'duration' => ['required', 'numeric', 'min:1', 'max:7'],
             'amount' => ['required', 'numeric', 'max:' . $book->amount],
         ]);
-
+    
         Borrow::create([
             'borrowed_at' => now(),
             'duration' => $request->duration,
@@ -102,29 +121,22 @@ class MyBookController extends Controller
             'book_id' => $book->id,
             'user_id' => auth()->id(),
         ]);
-
+    
         return redirect()->route('my-books.index')->with('success', 'Berhasil mengajukan peminjaman!');
     }
+    
 
     public function cancel($id)
     {
-        $borrow = Borrow::query()
-            ->where('id', $id)
-            ->where('user_id', auth()->id())
-            ->where('confirmation', false) // Pastikan belum dikonfirmasi
-            ->firstOrFail();
-
-        // Increment jumlah buku yang dipinjam
-        $borrow->book()->increment('amount', $borrow->amount);
-
-        // Update status buku jika perlu
-        $book = $borrow->book;
-        if ($book->amount > 0 && $book->status === Book::STATUSES['Unavailable']) {
-            $book->update(['status' => Book::STATUSES['Available']]);
+        $borrow = Borrow::findOrFail($id);
+    
+        if ($borrow->confirmation) {
+            return back()->withErrors('Peminjaman ini sudah dikonfirmasi dan tidak bisa dibatalkan!');
         }
-
+    
         $borrow->delete();
-
-        return redirect()->route('my-books.index')->with('success', 'Peminjaman buku berhasil dibatalkan!');
+    
+        return redirect()->route('my-books.index')->with('success', 'Peminjaman berhasil dibatalkan!');
     }
 }
+
